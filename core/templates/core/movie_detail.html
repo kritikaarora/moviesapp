@@ -1,0 +1,58 @@
+{% extends 'master.html' %}
+
+
+{% block title %}
+   {{ object.title }} - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="col-md-4">
+            <h3>{{ object }}</h3>
+            <div class="row">
+                <div class="col-xs-6 col-md-3">
+                    {% for i in object.movieimage_set.all %}
+                        <a href="#" class="thumbnail">
+                            <img src="{{ i.image.url }}" alt="...">
+                        </a>
+                    {% endfor %}
+                    
+                </div>
+            </div>
+            <p>{{ object.plot }}</p>
+        <p>Directed by {{ object.director }}</p>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div><br>
+                    This movie is rated: <br>
+                    <span class="label label-primary">{{ object.get_rating_display }}</span>
+                </div>
+            </div>
+            <div class="row">
+                {% if vote_form %}
+                    <form action="{{ vote_from_url }}" method="post">
+                        {% csrf_token %}
+                        {{ vote_form.as_p }}
+                    <button class="btn btn-primary">Vote</button>
+                    </form>
+                    <h3>Score: {{ object.score|default_if_none:"No score yet!" }}</h3>
+                    {% else %}
+                    <p>Login to vote for this movie</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                {% if image_form %}
+                     <form action="{% url 'core:movie_image_upload' movie_id=object.id %}" enctype="multipart/form-data" method="post">
+                        {% csrf_token %}
+                         {{ image_form.as_p }}
+                        <button class="btn btn-primary">Upload</button>
+                     </form>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
